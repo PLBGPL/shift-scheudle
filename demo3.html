@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>🏭 Demo2 — Snake Overlay (Today)</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="style.css">
+	
+</head>
+<body class="bg-slate-50 min-h-screen p-6">
+	<div class="w-full mx-auto px-4">
+		<header class="mb-4 bg-indigo-700 text-white rounded-lg px-4 py-3 shadow relative">
+			<div class="flex items-center justify-between">
+					<span class="header-wa-icon" role="img" aria-label="โรงงาน">🏭</span>
+					<h1 class="text-2xl font-bold text-white">IRPC Shift Schedule
+						<span class="gear-group" aria-hidden="true">
+							<span class="gear-inline gear-a gear-wrap" aria-hidden="true">
+								<i class="fas fa-cog spin-gear" aria-hidden="true"></i>
+							</span>
+							<span class="gear-inline gear-b gear-wrap" aria-hidden="true">
+								<i class="fas fa-cog spin-gear" aria-hidden="true"></i>
+							</span>
+							<span class="gear-inline gear-c gear-wrap" aria-hidden="true">
+								<i class="fas fa-cog spin-gear" aria-hidden="true"></i>
+							</span>
+						</span>
+					</h1>
+				<div class="flex items-center gap-2">
+					<button id="prevBtn" class="px-3 py-2 bg-indigo-600 text-white rounded flex items-center gap-2 relative shadow-sm hover:bg-indigo-500 transition">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+						</svg>
+						<span class="hidden sm:inline">Prev</span>
+					</button>
+					<div class="px-4 py-2 bg-indigo-600 text-white rounded shadow text-center">
+						<div id="monthDisplay" class="font-bold"></div>
+						<div id="yearDisplay" class="text-xs text-indigo-200"></div>
+					</div>
+					<button id="nextBtn" class="px-3 py-2 bg-indigo-600 text-white rounded flex items-center gap-2 relative shadow-sm hover:bg-indigo-500 transition">
+						<span class="hidden sm:inline">Next</span>
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+					</button>
+				</div>
+			</div>
+		</header>
+
+		<div class="mb-3">
+			<div class="flex items-center gap-2">
+					<button id="todayJump" class="px-3 py-2 bg-blue-600 text-white rounded">วันนี้</button>
+					<div id="dateDisplay" class="bg-white px-3 py-2 rounded ml-2 relative">
+						<label for="dateJump" class="sr-only">เลือกวันที่</label>
+						<input id="dateJump" type="date" class="opacity-0 absolute inset-0 w-full h-full" aria-label="เลือกวันที่" title="เลือกวันที่" />
+					</div>
+					<button id="toggleSnake" class="rounded-full px-3 py-1.5 bg-green-600 text-white">Snake: ON</button>
+				</div>
+				<!-- Legend Indicator -->
+                <div class="flex flex-wrap justify-center gap-2">
+                    <div class="flex items-center gap-1.5 shift-m px-3 py-1 rounded-full border border-yellow-200 shadow-sm text-[9px] md:text-xs font-semibold">
+                        <span class="w-2 h-2 bg-yellow-600 rounded-full"></span><span>M: เช้า</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 shift-e px-3 py-1 rounded-full border border-orange-200 shadow-sm text-[9px] md:text-xs font-semibold">
+                        <span class="w-2 h-2 bg-orange-700 rounded-full"></span><span>E: บ่าย</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 shift-n px-3 py-1 rounded-full border border-slate-700 shadow-sm text-[9px] md:text-xs font-semibold">
+                        <span class="w-2 h-2 bg-slate-300 rounded-full"></span><span>N: ดึก</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 shift-o px-3 py-1 rounded-full border border-gray-200 shadow-sm text-[9px] md:text-xs font-semibold">
+                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span><span>O: OFF</span>
+                    </div>
+                </div>
+		</div>
+
+		<div class="table-render-wrap">
+			<div id="tableContainer" class="overflow-x-auto bg-white rounded-lg shadow">
+				<table class="w-full text-center">
+				<thead>
+					<tr class="bg-slate-100">
+						<th class="p-4 text-left min-w-[120px] sticky left-0 bg-white z-20">ทีม / วันที่</th>
+						<th class="p-0">
+							<div id="datesContainer" class="flex min-w-max"></div>
+						</th>
+					</tr>
+				</thead>
+				<tbody id="calendarBody"></tbody>
+			</table>
+				</table>
+			</div>
+		</div>
+
+		<footer class="mt-4 text-sm text-gray-600">
+			<div class="flex justify-end items-center">
+				<div class="text-right">
+					<div class="flex flex-wrap gap-x-4 gap-y-1">
+						<span><strong>กะเช้า (M):</strong> 06:00-14:00</span>
+						<span><strong>กะบ่าย (E):</strong> 14:00-22:00</span>
+						<span><strong>กะดึก (N):</strong> 22:00-06:00 (ข้ามวัน)</span>
+					</div>
+					<div class="mt-1 text-xs text-gray-400">Updated: <span id="updateTime"></span></div>
+				</div>
+			</div>
+		</footer>
+	</div>
+
+	<script>window.__demoSnake = true;</script>
+	<script src="index.js"></script>
+	<script>
+		// add manual controls for testing: trigger and toggle persistent snake/ring
+		document.addEventListener('DOMContentLoaded', ()=>{
+			const toggle = document.getElementById('toggleSnake');
+			const todayBtn = document.getElementById('todayJump');
+
+			function setToggleState(on) {
+				if (!toggle) return;
+				toggle.textContent = on ? 'Snake: ON' : 'Snake: OFF';
+				if (on) {
+					toggle.classList.remove('bg-gray-300','text-gray-800');
+					toggle.classList.add('bg-green-600','text-white');
+				} else {
+					toggle.classList.remove('bg-green-600','text-white');
+					toggle.classList.add('bg-gray-300','text-gray-800');
+				}
+			}
+
+			if (toggle) {
+				// init styling
+				setToggleState(!!window.__demoSnake);
+				toggle.addEventListener('click', ()=>{
+					window.__demoSnake = !window.__demoSnake;
+					setToggleState(window.__demoSnake);
+					// recreate overlays according to new mode
+					ensureTodayOverlay();
+					setTimeout(()=>{ if (window.__demoSnake && typeof positionTodaySnakeOverlays === 'function') positionTodaySnakeOverlays(); else positionTodayOverlay(); }, 80);
+				});
+			}
+
+			// Auto-run Today on first load and initialize overlays according to snake flag
+			setTimeout(()=>{
+				if (todayBtn) todayBtn.click();
+				// ensure overlays are created after calendar renders
+				setTimeout(()=>{
+					ensureTodayOverlay();
+					if (window.__demoSnake && typeof positionTodaySnakeOverlays === 'function') positionTodaySnakeOverlays();
+					else positionTodayOverlay();
+					// apply sticky class to first column cells after calendar renders
+					applyStickyFirstColumn();
+				}, 140);
+			}, 520);
+
+				// Toggle "lift" while horizontally scrolling the table container
+				const tableWrap = document.getElementById('tableContainer');
+				if (tableWrap){
+					let ticking = false;
+					tableWrap.addEventListener('scroll', ()=>{
+						if (ticking) return;
+						ticking = true;
+						window.requestAnimationFrame(()=>{
+							const scrolled = tableWrap.scrollLeft > 0;
+							const headerCell = tableWrap.querySelector('th:first-child');
+							if (headerCell) headerCell.classList.toggle('sticky-lift', scrolled);
+							// apply lift to all first-column tds
+							Array.from(tableWrap.querySelectorAll('td:first-child')).forEach(td=> td.classList.toggle('sticky-lift', scrolled));
+							ticking = false;
+						});
+					});
+				}
+
+			// Apply sticky class to first TD of each row and observe future changes
+			function applyStickyFirstColumn(){
+				const tbody = document.getElementById('calendarBody');
+				if (!tbody) return;
+				Array.from(tbody.querySelectorAll('tr')).forEach(tr=>{
+					const td = tr.querySelector('td');
+					if (td) {
+						td.classList.add('sticky','left-0','sticky-panel');
+						// ensure the frozen cell is on top of any overlays
+						td.style.zIndex = '99999';
+					}
+				});
+			}
+
+			const calendarBody = document.getElementById('calendarBody');
+			if (calendarBody && window.MutationObserver){
+				const mo = new MutationObserver(()=> applyStickyFirstColumn());
+				mo.observe(calendarBody, { childList: true, subtree: true });
+			}
+		});
+	</script>
+</body>
+</html>
+
